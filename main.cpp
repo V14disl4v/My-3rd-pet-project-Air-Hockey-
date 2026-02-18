@@ -51,8 +51,9 @@ void initRacket();
 
 void initBall() {
     moveBall(racket1.x + racket1.w / 2.0f - 1.0f, racket1.y - 1.0f);
+
     ball1.alpha = -M_PI / 4.5f; // 45° вверх-вправо НА СТАРТЕ Угол -45 градусов (вверх-вправо) в радианах
-//   ball1.speed = 1.3f;  
+//   ball1.speed = 1.3f;         // скорость мячика
     ball1.speed = 0.9f; //для тестов
 }
 
@@ -101,7 +102,9 @@ void autoMoveBall()
         autoMoveBall();
     }
 }
-//---------1 РАКЕТКА
+
+
+
 void initRacket() {
     racket1.w = 7;
     racket1.x = (width - racket1.w) / 2;
@@ -121,7 +124,7 @@ void moveRacket(int x) {
     if (racket1.x + racket1.w >= width - 1) racket1.x = width - racket1.w - 1;
 }
 
-//------- 2 РАКЕТКА
+//______________2 РАКЕТКА______________//
 
 void initRacketSecond() {
     racket2.w = 7;
@@ -137,11 +140,13 @@ void showRacketSecond() {
 
 void moveRacketSecond(int x) {
     racket2.x = x;
+
     if (racket2.x < 1) racket2.x = 1;
     if (racket2.x + racket2.w >= width - 1) racket2.x = width - racket2.w - 1;
 }
 
-//-------- MAP
+
+
 void initMap() {
     memset(map, ' ', sizeof(map));
     for (int j = 0; j < width; j++) {
@@ -151,9 +156,20 @@ void initMap() {
     for (int i = 0; i < height; i++) {
         map[i][0] = map[i][width - 1] = '#';
     }
-    for (int j = width/2 - 10; j < width/2+10; j++) {  //стена посередине
-        map[height/2][j] = '#';
+
+    // 1 УРОВЕНЬ
+    //for (int j = width/2 - 10; j < width/2+10; j++) {  //стена посередине
+    //    map[height/2][j] = '#';
+    //}
+    // 2 УРОВЕНЬ
+    for (int j = 7; j < 15; j++) {  //маленькая стена слева
+        map[height / 4][j] = '#';
+        map[18][j] = '#';
     }
+    for (int i = 50; i < 58; i++) {  //маленькая стена слева
+        map[height / 4][i] = '#';
+        map[18][i] = '#';
+    }  
  }
        
 void showMap() {
@@ -167,6 +183,7 @@ void showMap() {
         buffer[pos++] = '\n';
     }
     buffer[pos] = '\0';
+
     // Один системный вызов вместо 1625!
     WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), buffer, pos, NULL, NULL);
 }
@@ -190,6 +207,9 @@ int main(void) {
     bool game = true;
    
     do {
+        /*for (int i = 1; i < width - 1; i++) {
+            map[racket1.y][i] = ' ';
+        }*/
         initMap();
         showRacket();
         showRacketSecond();
@@ -206,6 +226,7 @@ int main(void) {
             moveBall(racket1.x + racket1.w / 2.0f - 1.0f, racket1.y - 1.0f);
         }
         else {
+            // Движение по физике
             autoMoveBall();
             if (ball1.iy <= 0) {
                 countD++;
@@ -219,27 +240,48 @@ int main(void) {
             }
             showBall();
         }
-        gotoxy(width + 2, 2);
-        cout << "Scores Player 1 (down): " << countD;
-        gotoxy(width + 2, 4);
-        cout << "Scores Player 2 (Up): " << countU;
+        gotoxy(width + 2, 1);
+        cout << "Scores Player 1 (up): " << countU;
+        gotoxy(width + 2, 23);
+        cout << "Scores Player 2 (down): " << countD;
 
         if (countD >= 7) {
-            gotoxy(width + 2, 6);
+            game = false;
+            gotoxy(width + 2, height / 2 - 1);
             cout << "PLAYER 1 IS WINNER ! ! !";
-            gotoxy(width + 2, 7); 
+            gotoxy(width + 2, height / 2); 
             cout << "count: " << countD;
+            gotoxy(width + 2, height / 2 + 1);
+            cout << "Нажмите Q чтобы выйти";
+            char key = _getch();
+            while (true) {
+                char key = _getch();
+                if (key == 'q' || key == 'Q') {
+                    return 0; // Выход только при нажатии 'q'
+                }
+            }
         }
         else if (countU >= 7) {
-            gotoxy(width + 2, 6);
+            game = false;
+            gotoxy(width + 2, height /2 );
             cout << "PLAYER 2 IS WINNER ! ! !";
-            gotoxy(width + 2, 7);
+            gotoxy(width + 2, height / 2 + 1);
             cout << "count: " << countU;
+            while (true) {
+                gotoxy(width + 2, 25);
+                char key = _getch();
+                if (key == 'q' || key == 'Q') {
+                    gotoxy(1, height);
+                    return 0; // Выход только при нажатии 'q'
+                }
+            }
         }
+
         showBall();
 
         gotoxy(0, 0);
         showMap();
+
         Sleep(20);
     } while (game);
     return 0;
