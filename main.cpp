@@ -12,7 +12,6 @@ const int width = 65;
 const int height = 25; //строки
 char map[height][width];
 const float M_PI = 3.1415;
-int count{};
 
 int countD{};
 int countU{};
@@ -45,6 +44,12 @@ struct ball {
 racket racket1;
 racket racket2;
 ball ball1;
+
+static bool random_wall_placed = false;
+static int wall_x = -1;
+static int wall_y = -1;
+
+
 
 void moveBall(float x, float y);
 void initRacket();
@@ -147,7 +152,7 @@ void moveRacketSecond(int x) {
 
 
 
-void initMap() {
+void initMap (int lvl) {
     memset(map, ' ', sizeof(map));
     for (int j = 0; j < width; j++) {
         map[0][j] = ' ';
@@ -158,18 +163,35 @@ void initMap() {
     }
 
     // 1 УРОВЕНЬ
-    //for (int j = width/2 - 10; j < width/2+10; j++) {  //стена посередине
-    //    map[height/2][j] = '#';
-    //}
-    // 2 УРОВЕНЬ
-    for (int j = 7; j < 15; j++) {  //маленькая стена слева
-        map[height / 4][j] = '#';
-        map[18][j] = '#';
+    if (lvl == 2) {
+        for (int j = width / 2 - 10; j < width / 2 + 10; j++) {  //стена посередине
+            map[height / 2][j] = '#';
+        }
     }
-    for (int i = 50; i < 58; i++) {  //маленькая стена слева
-        map[height / 4][i] = '#';
-        map[18][i] = '#';
-    }  
+    // 2 УРОВЕНЬ
+    if (lvl == 3) {
+        for (int j = 7; j < 15; j++) {  //маленькая стена слева
+            map[height / 4][j] = '#';
+            map[18][j] = '#';
+        }
+        for (int i = 50; i < 58; i++) {  //маленькая стена слева
+            map[height / 4][i] = '#';
+            map[18][i] = '#';
+        }
+    }
+    else {};
+    // 3 УРОВЕНЬ - не работает
+    //int centerX = width / 2;     // ~32
+    //int centerY = height / 2;    // ~12
+
+    //int spread = 10;  // разброс ±10 клеток
+
+    //int rx = centerX - spread + (rand() % (spread * 2 + 1));
+    //int ry = centerY - spread + (rand() % (spread * 2 + 1));
+
+    //for(int i = 0; i< 5; i++){
+    //    map[ry][rx] = '#';
+    //}
  }
        
 void showMap() {
@@ -188,6 +210,9 @@ void showMap() {
     WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), buffer, pos, NULL, NULL);
 }
 
+
+
+
 int main(void) {
     setlocale(LC_ALL, "RU");
 
@@ -198,19 +223,23 @@ int main(void) {
     system("cls");
 
     initRacket();
-    initRacketSecond();
-    initMap();
+    initRacketSecond();\
     initBall();
     showBall();
     showMap();
     bool run = false;
     bool game = true;
-   
+    int lvl{};
+    gotoxy(0, 0);
+    std::cout << "Choose lvl: (2 or 3) " << endl;
+    cin >> lvl;
+
     do {
         /*for (int i = 1; i < width - 1; i++) {
             map[racket1.y][i] = ' ';
         }*/
-        initMap();
+        initMap(lvl);
+
         showRacket();
         showRacketSecond();
 
@@ -241,14 +270,14 @@ int main(void) {
             showBall();
         }
         gotoxy(width + 2, 1);
-        cout << "Scores Player 1 (up): " << countU;
+        std::cout << "Scores Player 1 (up): " << countU;
         gotoxy(width + 2, 23);
         cout << "Scores Player 2 (down): " << countD;
 
         if (countD >= 7) {
             game = false;
             gotoxy(width + 2, height / 2 - 1);
-            cout << "PLAYER 1 IS WINNER ! ! !";
+            cout << "PLAYER 2 IS WINNER ! ! !";
             gotoxy(width + 2, height / 2); 
             cout << "count: " << countD;
             gotoxy(width + 2, height / 2 + 1);
@@ -257,14 +286,15 @@ int main(void) {
             while (true) {
                 char key = _getch();
                 if (key == 'q' || key == 'Q') {
-                    return 0; // Выход только при нажатии 'q'
+                    gotoxy(1, height);
+                    return 0;
                 }
             }
         }
         else if (countU >= 7) {
             game = false;
             gotoxy(width + 2, height /2 );
-            cout << "PLAYER 2 IS WINNER ! ! !";
+            cout << "PLAYER 1 IS WINNER ! ! !";
             gotoxy(width + 2, height / 2 + 1);
             cout << "count: " << countU;
             while (true) {
@@ -272,7 +302,7 @@ int main(void) {
                 char key = _getch();
                 if (key == 'q' || key == 'Q') {
                     gotoxy(1, height);
-                    return 0; // Выход только при нажатии 'q'
+                    return 0; 
                 }
             }
         }
