@@ -15,6 +15,7 @@ const float M_PI = 3.1415;
 
 int countD{};
 int countU{};
+int lvl{};
 
 // для отмены мерцания карты
 void gotoxy(int x, int y) {
@@ -210,7 +211,12 @@ void showMap() {
     WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), buffer, pos, NULL, NULL);
 }
 
-
+void ShowLVL() {
+    system("cls");
+    cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t LEVEL " << lvl;
+    Sleep(1500);
+    system("cls");
+}
 
 
 int main(void) {
@@ -229,10 +235,11 @@ int main(void) {
     showMap();
     bool run = false;
     bool game = true;
-    int lvl{};
     gotoxy(0, 0);
     std::cout << "Choose lvl: (2 or 3) " << endl;
     cin >> lvl;
+
+    ShowLVL();
 
     do {
         /*for (int i = 1; i < width - 1; i++) {
