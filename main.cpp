@@ -62,6 +62,13 @@ void initBall() {
 //   ball1.speed = 1.3f;         // скорость мячика
     ball1.speed = 0.9f; //для тестов
 }
+void initBallSecond() {
+    moveBall(racket2.x + racket2.w / 2.0f - 1.0f, racket2.y + 1.0f);
+
+    ball1.alpha = -M_PI / 4.5f; // 45° вверх-вправо НА СТАРТЕ Угол -45 градусов (вверх-вправо) в радианах
+    //   ball1.speed = 1.3f;         // скорость мячика
+    ball1.speed = 0.9f; //для тестов
+}
 
 void showBall(){
     if (ball1.iy >= 0 && ball1.iy < height &&
@@ -216,6 +223,8 @@ void ShowLVL() {
     cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t LEVEL " << lvl;
     Sleep(1500);
     system("cls");
+    cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t FIGHT!!!";
+    Sleep(1000);
 }
 
 
@@ -235,6 +244,7 @@ int main(void) {
     showMap();
     bool run = false;
     bool game = true;
+    bool ballAtBottom = false;
     gotoxy(0, 0);
     std::cout << "Choose lvl: (2 or 3) " << endl;
     cin >> lvl;
@@ -242,9 +252,6 @@ int main(void) {
     ShowLVL();
 
     do {
-        /*for (int i = 1; i < width - 1; i++) {
-            map[racket1.y][i] = ' ';
-        }*/
         initMap(lvl);
 
         showRacket();
@@ -253,13 +260,21 @@ int main(void) {
         if (GetAsyncKeyState('E') & 0x8001) break;
         if (GetAsyncKeyState('A') & 0x8000) moveRacket(racket1.x - 3); 
         if (GetAsyncKeyState('D') & 0x8000) moveRacket(racket1.x + 3);
-        if (GetAsyncKeyState('W') & 0x8000) run = true;
         if (GetAsyncKeyState('J') & 0x8000) moveRacketSecond(racket2.x - 3);
         if (GetAsyncKeyState('L') & 0x8000) moveRacketSecond(racket2.x + 3);
 
         // Позиционирование шарика
         if (!run) {
-            moveBall(racket1.x + racket1.w / 2.0f - 1.0f, racket1.y - 1.0f);
+            if (!ballAtBottom)
+            {
+                moveBall(racket1.x + racket1.w / 2.0f - 1.0f, racket1.y - 1.0f);
+                if (GetAsyncKeyState('W') & 0x8000) run = true;
+            }
+            else if (ballAtBottom)
+            {
+                moveBall(racket2.x + racket2.w / 2.0f - 1.0f, racket2.y + 1.0f);
+                if (GetAsyncKeyState('I') & 0x8000) run = true;
+            }
         }
         else {
             // Движение по физике
@@ -268,11 +283,13 @@ int main(void) {
                 countD++;
                 run = false;
                 initBall();
+                ballAtBottom = false;
             }
             else if (ball1.iy >= height) {
                 countU++;
                 run = false;
-                initBall();
+                initBallSecond();
+                ballAtBottom = true;
             }
             showBall();
         }
