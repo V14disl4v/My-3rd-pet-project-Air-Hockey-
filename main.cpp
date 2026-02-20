@@ -59,15 +59,15 @@ void initBall() {
     moveBall(racket1.x + racket1.w / 2.0f - 1.0f, racket1.y - 1.0f);
 
     ball1.alpha = -M_PI / 4.5f; // 45° вверх-вправо НА СТАРТЕ Угол -45 градусов (вверх-вправо) в радианах
-//   ball1.speed = 1.3f;         // скорость мячика
-    ball1.speed = 0.9f; //для тестов
+   ball1.speed = 1.2f;         // скорость мячика
+//    ball1.speed = 0.9f; //для тестов
 }
 void initBallSecond() {
     moveBall(racket2.x + racket2.w / 2.0f - 1.0f, racket2.y + 1.0f);
 
     ball1.alpha = -M_PI / 4.5f; // 45° вверх-вправо НА СТАРТЕ Угол -45 градусов (вверх-вправо) в радианах
-    //   ball1.speed = 1.3f;         // скорость мячика
-    ball1.speed = 0.9f; //для тестов
+    ball1.speed = 1.3f;         // скорость мячика
+//    ball1.speed = 0.9f; //для тестов
 }
 
 void showBall(){
@@ -170,13 +170,13 @@ void initMap (int lvl) {
         map[i][0] = map[i][width - 1] = '#';
     }
 
-    // 1 УРОВЕНЬ
+    // 2 УРОВЕНЬ
     if (lvl == 2) {
         for (int j = width / 2 - 10; j < width / 2 + 10; j++) {  //стена посередине
             map[height / 2][j] = '#';
         }
     }
-    // 2 УРОВЕНЬ
+    // 3 УРОВЕНЬ
     if (lvl == 3) {
         for (int j = 7; j < 15; j++) {  //маленькая стена слева
             map[height / 4][j] = '#';
@@ -187,19 +187,17 @@ void initMap (int lvl) {
             map[18][i] = '#';
         }
     }
-    else {};
-    // 3 УРОВЕНЬ - не работает
-    //int centerX = width / 2;     // ~32
-    //int centerY = height / 2;    // ~12
-
-    //int spread = 10;  // разброс ±10 клеток
-
-    //int rx = centerX - spread + (rand() % (spread * 2 + 1));
-    //int ry = centerY - spread + (rand() % (spread * 2 + 1));
-
-    //for(int i = 0; i< 5; i++){
-    //    map[ry][rx] = '#';
-    //}
+    // 4 уровень
+    if (lvl == 4) {
+        for (int j = 0; j < 18; j++) {
+            map[0][j] = '#';
+            map[height - 1][j] = '#';
+        }
+        for (int j = 47; j < width; j++) {
+            map[0][j] = '#';
+            map[height - 1][j] = '#';
+        }
+    }
  }
        
 void showMap() {
@@ -219,13 +217,26 @@ void showMap() {
 }
 
 void ShowLVL() {
-    system("cls");
-    cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t LEVEL " << lvl;
-    Sleep(1500);
-    system("cls");
-    cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t FIGHT!!!";
-    Sleep(1000);
+    if (lvl == 1 || lvl == 2 || lvl == 3) {
+        system("cls");
+        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t LEVEL " << lvl;
+        Sleep(1500);
+        system("cls");
+        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t FIGHT!!!";
+        Sleep(1000);
+    }
+
+    else if (lvl == 4) {
+        system("cls");
+        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t LEVEL " << lvl;
+        Sleep(1500);
+        system("cls");
+        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t FINAL LVL!!!";
+        Sleep(1000);
+    }
 }
+
+
 
 
 int main(void) {
@@ -238,22 +249,23 @@ int main(void) {
     system("cls");
 
     initRacket();
-    initRacketSecond();\
+    initRacketSecond();
     initBall();
     showBall();
     showMap();
     bool run = false;
     bool game = true;
     bool ballAtBottom = false;
-    gotoxy(0, 0);
-    std::cout << "Choose lvl: (2 or 3) " << endl;
-    cin >> lvl;
+    bool uplvl = true;
+    bool uplvlTo3 = true;
+    bool uplvlTo4 = true;
+
+    lvl = 1;
 
     ShowLVL();
 
     do {
         initMap(lvl);
-
         showRacket();
         showRacketSecond();
 
@@ -298,7 +310,24 @@ int main(void) {
         gotoxy(width + 2, 23);
         cout << "Scores Player 2 (down): " << countD;
 
-        if (countD >= 7) {
+        if (uplvl && (countD == 5 || countU == 5)) {
+            lvl++;
+            ShowLVL();
+            uplvl = false;
+        }
+        if (uplvlTo3 && (countD == 10 || countU == 10)) {
+            lvl++;
+            ShowLVL();
+            uplvlTo3 = false;
+        }
+        if (uplvlTo4 && (countD == 15 || countU == 15)) {
+            lvl++;
+            ShowLVL();
+            uplvlTo4 = false;
+        }
+
+
+        if (countD >= 16) {
             game = false;
             gotoxy(width + 2, height / 2 - 1);
             cout << "PLAYER 2 IS WINNER ! ! !";
@@ -315,7 +344,7 @@ int main(void) {
                 }
             }
         }
-        else if (countU >= 7) {
+        else if (countU >= 16) {
             game = false;
             gotoxy(width + 2, height /2 );
             cout << "PLAYER 1 IS WINNER ! ! !";
@@ -338,5 +367,5 @@ int main(void) {
 
         Sleep(20);
     } while (game);
-    return 0;
+ return 0;
 }
