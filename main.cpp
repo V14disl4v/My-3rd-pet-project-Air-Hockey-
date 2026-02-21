@@ -214,7 +214,6 @@ void showMap() {
         buffer[pos++] = '\n';
     }
     buffer[pos] = '\0';
-
     // Один системный вызов вместо 1625!
     WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), buffer, pos, NULL, NULL);
 }
@@ -228,7 +227,6 @@ void ShowLVL() {
         cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t FIGHT!!!";
         Sleep(1000);
     }
-
     else if (lvl == 4) {
         system("cls");
         cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t\t\t LEVEL " << lvl;
@@ -238,9 +236,6 @@ void ShowLVL() {
         Sleep(1000);
     }
 }
-
-
-
 
 int main(void) {
     setlocale(LC_ALL, "RU");
@@ -264,7 +259,6 @@ int main(void) {
     bool uplvlTo4 = true;
 
     lvl = 1;
-
     ShowLVL();
 
     do {
@@ -367,13 +361,10 @@ int main(void) {
         }
 
         showBall();
-
         gotoxy(0, 0);
         showMap();
 
         Sleep(20);
     } while (game);
-
-   
     return 0;
 }
