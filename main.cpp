@@ -6,6 +6,9 @@
 #include <ctime>   
 #include <cmath>
 
+#include<thread>
+#include<chrono>
+
 using namespace std;
 
 const int width = 65;
@@ -311,16 +314,19 @@ int main(void) {
         cout << "Scores Player 2 (down): " << countD;
 
         if (uplvl && (countD == 5 || countU == 5)) {
+            this_thread::sleep_for(chrono::milliseconds(250));
             lvl++;
             ShowLVL();
             uplvl = false;
         }
         if (uplvlTo3 && (countD == 10 || countU == 10)) {
+            this_thread::sleep_for(chrono::milliseconds(250));
             lvl++;
             ShowLVL();
             uplvlTo3 = false;
         }
         if (uplvlTo4 && (countD == 15 || countU == 15)) {
+            this_thread::sleep_for(chrono::milliseconds(250));
             lvl++;
             ShowLVL();
             uplvlTo4 = false;
@@ -367,5 +373,7 @@ int main(void) {
 
         Sleep(20);
     } while (game);
- return 0;
+
+   
+    return 0;
 }
